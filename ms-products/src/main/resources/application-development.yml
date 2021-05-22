@@ -1,0 +1,24 @@
+logging:
+  level:
+    com:
+      contaazul: info
+  org:
+    hibernate:
+      SQL: info
+      type:
+        descriptor:
+          sql: trace
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ms-products
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+      show_sql: true
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true

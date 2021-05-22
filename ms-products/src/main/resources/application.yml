@@ -1,0 +1,37 @@
+environment:
+  status: OK
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      base-path: /management
+      exposure:
+        include: health,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+spring:
+  application:
+    name: ms-products
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ms-products
+    username: postgres
+    password: postgres
+    hikari:
+      connection-timeout: 10000
+      maximum-pool-size: 5
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show_sql: true
+
