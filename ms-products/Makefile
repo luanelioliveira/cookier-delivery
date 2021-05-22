@@ -1,3 +1,7 @@
+# format project
+format:
+	mvn fmt:format -f pom.xml
+
 # execute tests
 build:
 	mvn clean install
