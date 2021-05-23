@@ -22,6 +22,8 @@
     <java.version>11</java.version>
     <prometheus-simpleclient_hotspot.version>0.6.0</prometheus-simpleclient_hotspot.version>
     <plugin.coveo-formatter.version>2.10</plugin.coveo-formatter.version>
+    <docker.image.repository>luanelioliveira</docker.image.repository>
+    <docker.image.name>cookierdelivery-ms-products</docker.image.name>
   </properties>
 
   <dependencies>
@@ -109,6 +111,38 @@
             <phase>compile</phase>
             <goals>
               <goal>format</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.33.0</version>
+        <configuration>
+          <verbose>true</verbose>
+          <images>
+            <image>
+              <name>${docker.image.repository}/${docker.image.name}</name>
+              <build>
+                <dockerFileDir>${project.basedir}</dockerFileDir>
+                <assembly>
+                  <descriptorRef>artifact</descriptorRef>
+                </assembly>
+                <tags>
+                  <tag>${project.version}</tag>
+                </tags>
+              </build>
+            </image>
+          </images>
+        </configuration>
+        <executions>
+          <execution>
+            <id>default</id>
+            <phase>install</phase>
+            <goals>
+              <goal>build</goal>
+              <goal>push</goal>
             </goals>
           </execution>
         </executions>

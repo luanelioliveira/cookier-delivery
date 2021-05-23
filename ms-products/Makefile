@@ -20,10 +20,8 @@ debug:
 
 # Build application
 docker-build:
-	docker build -t ms-products:latest .
+	mvn docker:build -f pom.xml
 
 # Push application to docker hub
 docker-push:
 	docker push luanelioliveira/cookierdelivery-ms-products
-
-
