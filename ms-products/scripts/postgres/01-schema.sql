@@ -1,7 +1,7 @@
 DROP DATABASE IF EXISTS ms_products;
 CREATE DATABASE ms_products;
 
-GRANT ALL PRIVILEGES ON DATABASE "ms_products" to root;
+GRANT ALL PRIVILEGES ON DATABASE "ms_products" to postgres;
 
 \c ms_products;
 

@@ -4,10 +4,10 @@ services:
     container_name: ms-products-db
     image: postgres:12-alpine
     ports:
-      - "5433:5432"
+      - "5432:5432"
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     volumes:
       - ./scripts/postgres/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
       - ./scripts/postgres/02-data.sql:/docker-entrypoint-initdb.d/02-data.sql
