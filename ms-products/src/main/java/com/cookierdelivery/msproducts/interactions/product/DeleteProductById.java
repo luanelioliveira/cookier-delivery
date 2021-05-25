@@ -11,6 +11,6 @@ public class DeleteProductById {
   private final ProductRepository repository;
 
   public void delete(long id) {
-    repository.findById(id);
+    repository.deleteById(id);
   }
 }
