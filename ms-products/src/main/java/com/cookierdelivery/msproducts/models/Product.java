@@ -10,7 +10,9 @@ import javax.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"code"})})
