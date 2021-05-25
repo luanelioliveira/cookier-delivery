@@ -22,6 +22,7 @@
     <java.version>11</java.version>
     <prometheus-simpleclient_hotspot.version>0.6.0</prometheus-simpleclient_hotspot.version>
     <plugin.coveo-formatter.version>2.10</plugin.coveo-formatter.version>
+    <testcontainer.version>1.15.1</testcontainer.version>
     <docker.image.repository>luanelioliveira</docker.image.repository>
     <docker.image.name>cookierdelivery-ms-products</docker.image.name>
   </properties>
@@ -80,9 +81,21 @@
       <version>${prometheus-simpleclient_hotspot.version}</version>
     </dependency>
 
+    <!-- tests -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${testcontainer.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
