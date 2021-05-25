@@ -28,4 +28,4 @@ docker-build:
 
 # Push application to docker hub
 docker-push:
-	docker push luanelioliveira/cookierdelivery-ms-products
+	mvn docker:push
