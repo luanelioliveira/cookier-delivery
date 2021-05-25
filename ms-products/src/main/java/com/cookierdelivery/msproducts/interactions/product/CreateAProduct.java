@@ -2,17 +2,17 @@ package com.cookierdelivery.msproducts.interactions.product;
 
 import com.cookierdelivery.msproducts.models.Product;
 import com.cookierdelivery.msproducts.repositorie.ProductRepository;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class GetProductById {
+public class CreateAProduct {
 
   private final ProductRepository repository;
 
-  public Optional<Product> get(long id) {
-    return repository.findById(id);
+  public Product create(Product product) {
+
+    return repository.save(product);
   }
 }
