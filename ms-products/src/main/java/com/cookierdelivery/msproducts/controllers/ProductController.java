@@ -1,6 +1,7 @@
 package com.cookierdelivery.msproducts.controllers;
 
 import com.cookierdelivery.msproducts.interactions.product.CreateAProduct;
+import com.cookierdelivery.msproducts.interactions.product.DeleteProductById;
 import com.cookierdelivery.msproducts.interactions.product.GetAllProducts;
 import com.cookierdelivery.msproducts.interactions.product.GetProductById;
 import com.cookierdelivery.msproducts.interactions.product.UpdateProductById;
@@ -9,6 +10,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +28,7 @@ public class ProductController {
   private final GetProductById getProductById;
   private final CreateAProduct createAProduct;
   private final UpdateProductById updateProductById;
+  private final DeleteProductById deleteProductById;
 
   @GetMapping
   public List<Product> getAllProducts() {
@@ -56,5 +59,12 @@ public class ProductController {
         .update(id, product)
         .map((productUpdated) -> ResponseEntity.ok(productUpdated))
         .orElse(ResponseEntity.notFound().build());
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteProductById(@PathVariable long id) {
+
+    deleteProductById.delete(id);
+    return ResponseEntity.noContent().build();
   }
 }
