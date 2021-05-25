@@ -1,7 +1,11 @@
 package com.cookierdelivery.cdk.services;
 
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Duration;
+import software.amazon.awscdk.core.Fn;
 import software.amazon.awscdk.core.RemovalPolicy;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
@@ -36,7 +40,12 @@ public class MsProductsServiceStack extends Stack {
   private static final String LOG_GROUP = "MsProducts";
   private static final String LOG_PREFIX = "MsProducts";
 
-  private static final String IMAGE = "luanelioliveira/cookierdelivery-ms-products:latest";
+  private static final String JDBC_URL = "jdbc:postgresql://{0}:5432/ms_products";
+
+  private static final String IMAGE_REPOSITORY = "luanelioliveira";
+  private static final String IMAGE_NAME = "cookierdelivery-ms-products";
+  private static final String IMAGE_TAG = "1.2.0";
+
   private static final String CONTAINER_NAME = "ms-products";
   private static final int CONTAINER_PORT = 8080;
 
@@ -54,9 +63,9 @@ public class MsProductsServiceStack extends Stack {
       final Construct scope, final String id, final StackProps props, Cluster cluster) {
     super(scope, id, props);
 
-    ApplicationLoadBalancedFargateService loadBalancedService = createApplicationService(cluster);
-    configureHealthCheck(loadBalancedService);
-    configureScalable(loadBalancedService);
+    ApplicationLoadBalancedFargateService applicationService = createApplicationService(cluster);
+    configureHealthCheck(applicationService);
+    configureScalable(applicationService);
   }
 
   private ApplicationLoadBalancedFargateService createApplicationService(Cluster cluster) {
@@ -84,13 +93,29 @@ public class MsProductsServiceStack extends Stack {
     return AwsLogDriverProps.builder().logGroup(logGroup).streamPrefix(LOG_PREFIX).build();
   }
 
+  private Map<String, String> createEnvironments() {
+    Map<String, String> environments = new HashMap<>();
+
+    String databaseUrl = MessageFormat.format(JDBC_URL, Fn.importValue("ms-products-db-url"));
+    String databaseUsername = Fn.importValue("ms-products-db-username");
+    String databasePassword = Fn.importValue("ms-products-db-password");
+
+    environments.put("SPRING_DATASOURCE_URL", databaseUrl);
+    environments.put("SPRING_DATASOURCE_USERNAME", databaseUsername);
+    environments.put("SPRING_DATASOURCE_PASSWORD", databasePassword);
+
+    return environments;
+  }
+
   private ApplicationLoadBalancedTaskImageOptions taskImageOptions() {
+    String image = MessageFormat.format("{0}/{1}:{2}", IMAGE_REPOSITORY, IMAGE_NAME, IMAGE_TAG);
 
     return ApplicationLoadBalancedTaskImageOptions.builder()
         .containerName(CONTAINER_NAME)
-        .image(ContainerImage.fromRegistry(IMAGE))
+        .image(ContainerImage.fromRegistry(image))
         .containerPort(CONTAINER_PORT)
         .logDriver(LogDriver.awsLogs(logConfig()))
+        .environment(createEnvironments())
         .build();
   }
 
