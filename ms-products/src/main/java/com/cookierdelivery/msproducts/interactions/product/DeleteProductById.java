@@ -1,6 +1,6 @@
 package com.cookierdelivery.msproducts.interactions.product;
 
-import com.cookierdelivery.msproducts.repositorie.ProductRepository;
+import com.cookierdelivery.msproducts.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
