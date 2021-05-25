@@ -1,5 +1,5 @@
 # format project
-format:
+fmt:
 	mvn fmt:format -f pom.xml
 
 # execute tests
@@ -13,6 +13,10 @@ test:
 # execute build without tests and run the application with local-container profile
 run:
 	mvn spring-boot:run -Dspring-boot.run.profiles=development
+
+# run database application with local-container
+run-database:
+	docker-compose -f docker-compose.development.yml up
 
 # execute build without tests and run the application with local-container profile in debug mode.
 debug:
