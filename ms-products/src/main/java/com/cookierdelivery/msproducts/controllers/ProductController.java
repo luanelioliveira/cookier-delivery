@@ -3,6 +3,7 @@ package com.cookierdelivery.msproducts.controllers;
 import com.cookierdelivery.msproducts.interactions.product.CreateAProduct;
 import com.cookierdelivery.msproducts.interactions.product.DeleteProductById;
 import com.cookierdelivery.msproducts.interactions.product.GetAllProducts;
+import com.cookierdelivery.msproducts.interactions.product.GetProductByCode;
 import com.cookierdelivery.msproducts.interactions.product.GetProductById;
 import com.cookierdelivery.msproducts.interactions.product.UpdateProductById;
 import com.cookierdelivery.msproducts.models.Product;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class ProductController {
 
   private final GetAllProducts getAllProducts;
   private final GetProductById getProductById;
+  private final GetProductByCode getProductByCode;
   private final CreateAProduct createAProduct;
   private final UpdateProductById updateProductById;
   private final DeleteProductById deleteProductById;
@@ -33,6 +36,15 @@ public class ProductController {
   @GetMapping
   public List<Product> getAllProducts() {
     return getAllProducts.get();
+  }
+
+  @GetMapping("/bycode")
+  public ResponseEntity<Product> getProductByCode(@RequestParam String code) {
+
+    return getProductByCode
+        .get(code)
+        .map((product) -> ResponseEntity.ok(product))
+        .orElse(ResponseEntity.notFound().build());
   }
 
   @GetMapping("/{id}")
