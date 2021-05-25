@@ -100,9 +100,10 @@ public class MsProductsServiceStack extends Stack {
     String databaseUsername = Fn.importValue("ms-products-db-username");
     String databasePassword = Fn.importValue("ms-products-db-password");
 
-    environments.put("SPRING_DATASOURCE_URL", databaseUrl);
-    environments.put("SPRING_DATASOURCE_USERNAME", databaseUsername);
-    environments.put("SPRING_DATASOURCE_PASSWORD", databasePassword);
+    environments.put("DATASOURCE_URL", databaseUrl);
+    environments.put("DATASOURCE_USERNAME", databaseUsername);
+    environments.put("DATASOURCE_PASSWORD", databasePassword);
+    environments.put("ENVIRONMENT_PROFILE", "production");
 
     return environments;
   }
