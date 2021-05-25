@@ -10,7 +10,7 @@ logging:
           sql: trace
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ms-products
+    url: jdbc:postgresql://localhost:5432/ms_products
     username: postgres
     password: postgres
   jpa:
