@@ -38,7 +38,7 @@ public class ProductController {
     return getAllProducts.get();
   }
 
-  @GetMapping("/bycode")
+  @GetMapping("/by")
   public ResponseEntity<Product> getProductByCode(@RequestParam String code) {
 
     return getProductByCode
