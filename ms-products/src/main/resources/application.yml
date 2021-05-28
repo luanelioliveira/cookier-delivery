@@ -11,7 +11,7 @@ management:
     web:
       base-path: /management
       exposure:
-        include: health,prometheus
+        include: health, metrics, prometheus
   metrics:
     export:
       prometheus:

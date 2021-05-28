@@ -15,7 +15,7 @@ run:
 	mvn spring-boot:run -Dspring-boot.run.profiles=development
 
 # run database application with local-container
-run-database:
+compose-up:
 	docker-compose -f docker-compose.development.yml up
 
 # execute build without tests and run the application with local-container profile in debug mode.
