@@ -2,4 +2,4 @@ spring:
     jpa:
         show_sql: false
         hibernate:
-            ddl-auto: none
+            ddl-auto: update
