@@ -3,6 +3,7 @@ package com.cookierdelivery.msproducts.controllers.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
+
 import com.cookierdelivery.msproducts.models.Product;
 import com.cookierdelivery.msproducts.repositories.ProductRepository;
 import com.cookierdelivery.msproducts.util.AbstractIntegrationTest;
