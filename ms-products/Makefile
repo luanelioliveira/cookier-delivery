@@ -4,7 +4,7 @@ fmt:
 
 # execute tests
 build:
-	mvn clean install
+	mvn clean install -Dmaven.test.skip=true
 
 # execute tests
 test:
@@ -14,9 +14,16 @@ test:
 run:
 	mvn spring-boot:run -Dspring-boot.run.profiles=development
 
+localstack:
+	docker run --rm -p 4566:4566 -p 4571:4571 localstack/localstack -e "SERVICES=sns,sqs,dynamodb,s3"
+
 # run database application with local-container
 compose-up:
 	docker-compose -f docker-compose.development.yml up
+
+# run database application with local-container
+compose-down:
+	docker-compose -f docker-compose.development.yml down
 
 # execute build without tests and run the application with local-container profile in debug mode.
 debug:

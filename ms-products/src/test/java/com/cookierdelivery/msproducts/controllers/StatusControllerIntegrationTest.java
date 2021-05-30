@@ -1,4 +1,4 @@
-package com.cookierdelivery.msproducts.controllers.integration;
+package com.cookierdelivery.msproducts.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
-public class StatusControllerTest extends AbstractIntegrationTest {
+public class StatusControllerIntegrationTest extends AbstractIntegrationTest {
 
   @Autowired private TestRestTemplate restTemplate;
 

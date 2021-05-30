@@ -1,4 +1,4 @@
-package com.cookierdelivery.msproducts.controllers.integration;
+package com.cookierdelivery.msproducts.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
@@ -27,7 +27,7 @@ import org.springframework.test.context.jdbc.SqlConfig;
     scripts = "/db/controller/integration/product/clear-data.sql",
     config = @SqlConfig(transactionMode = ISOLATED),
     executionPhase = AFTER_TEST_METHOD)
-public class ProductControllerTest extends AbstractIntegrationTest {
+public class ProductControllerIntegrationTest extends AbstractIntegrationTest {
 
   private static final String RESOURCE = "products";
 

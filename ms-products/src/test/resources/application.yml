@@ -1,8 +1,12 @@
 environment:
   status: OK
+
 server:
   port: 8888
+
 spring:
+  application:
+    name: ms-products
   datasource:
     password: ${DB_PASSWORD}
     url: ${DB_URL}
@@ -17,3 +21,17 @@ spring:
 ryuk:
   container:
     image: testcontainersofficial/ryuk
+
+aws:
+  region:
+    static: us-east-1
+  stack:
+    auto: false
+  sns:
+    topic:
+      product:
+        events:
+          arn: product_events
+
+s3:
+  orderEventBucket: order-event-bucket
