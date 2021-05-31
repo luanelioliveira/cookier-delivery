@@ -18,8 +18,8 @@ public class ProductPublisher {
   private final Topic topic;
 
   public void publishProductEvent(EventType eventType, Product product, String username) {
-    ProductEvent productEvent = ProductEvent.of(product.getId(), product.getCode(), username);
-    Event event = Event.from(eventType, JsonUtils.toJson(productEvent));
+    var productEvent = ProductEvent.of(product.getId(), product.getCode(), username);
+    var event = Event.from(eventType, JsonUtils.toJson(productEvent));
 
     sns.publish(topic.getTopicArn(), JsonUtils.toJson(event));
   }

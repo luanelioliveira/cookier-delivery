@@ -4,11 +4,15 @@ fmt:
 
 # execute tests
 build:
-	mvn clean install -Dmaven.test.skip=true
+	mvn clean install
 
 # execute tests
 test:
 	mvn clean test
+
+# execute integration tests
+integration-test:
+	mvn clean integration-test
 
 # execute build without tests and run the application with local-container profile
 run:

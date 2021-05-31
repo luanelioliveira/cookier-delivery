@@ -49,7 +49,7 @@ public class SnsConfig {
   }
 
   private void createTopics(AmazonSNS sns) {
-    CreateTopicRequest createTopicRequest = new CreateTopicRequest(productEventsTopic);
+    var createTopicRequest = new CreateTopicRequest(productEventsTopic);
     var productEventsTopicArn = sns.createTopic(createTopicRequest).getTopicArn();
     topics.put(productEventsTopic, productEventsTopicArn);
   }

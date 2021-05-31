@@ -128,6 +128,33 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/*IntegrationTest.java</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <phase>integration-test</phase>
+            <configuration>
+              <excludes>
+                <exclude>none</exclude>
+              </excludes>
+              <includes>
+                <include>**/*IntegrationTest.java</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
@@ -139,6 +166,7 @@
           </excludes>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>com.coveo</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
@@ -153,6 +181,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>io.fabric8</groupId>
         <artifactId>docker-maven-plugin</artifactId>
@@ -185,36 +214,8 @@
           </execution>
         </executions>
       </plugin>
+
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>integration-tests</id>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-failsafe-plugin</artifactId>
-              <executions>
-                <execution>
-                  <goals>
-                    <goal>integration-test</goal>
-                    <goal>verify</goal>
-                  </goals>
-                </execution>
-              </executions>
-              <configuration>
-                <includes>
-                  <include>**/*IntegrationTest.java</include>
-                </includes>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-  </profiles>
 
 </project>
