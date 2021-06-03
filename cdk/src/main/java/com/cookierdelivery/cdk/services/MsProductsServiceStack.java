@@ -1,5 +1,6 @@
 package com.cookierdelivery.cdk.services;
 
+import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,7 @@ import software.amazon.awscdk.services.ecs.ScalableTaskCount;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedFargateService;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskImageOptions;
 import software.amazon.awscdk.services.elasticloadbalancingv2.HealthCheck;
+import software.amazon.awscdk.services.events.targets.SnsTopic;
 import software.amazon.awscdk.services.logs.LogGroup;
 
 public class MsProductsServiceStack extends Stack {
@@ -40,35 +42,44 @@ public class MsProductsServiceStack extends Stack {
   private static final String LOG_GROUP = "MsProducts";
   private static final String LOG_PREFIX = "MsProducts";
 
-  private static final String JDBC_URL = "jdbc:postgresql://{0}:5432/ms_products";
+  private static final String JDBC_URL = "jdbc:postgresql://{0}:5432/{1}";
 
   private static final String IMAGE_REPOSITORY = "luanelioliveira";
   private static final String IMAGE_NAME = "cookierdelivery-ms-products";
-  private static final String IMAGE_TAG = "1.2.0";
+  private static final String IMAGE_TAG = "1.7.0";
 
   private static final String CONTAINER_NAME = "ms-products";
   private static final int CONTAINER_PORT = 8080;
 
-  private static final String HEALTH_CHECK_PATH = "/management/health";
+  private static final URI HEALTH_CHECK_PATH = URI.create("/management/health");
   private static final String HEALTH_CHECK_PORT = "8080";
   private static final String HEALTH_CHECK_HEALTHY_STATUS_CODE = "200";
 
   private static final String AUTOSCALING_ID = "MsProductsAutoScaling";
 
-  public MsProductsServiceStack(final Construct scope, final String id, Cluster cluster) {
-    this(scope, id, null, cluster);
+  public MsProductsServiceStack(
+      final Construct scope, final String id, Cluster cluster, SnsTopic productEventsTopic) {
+    this(scope, id, null, cluster, productEventsTopic);
   }
 
   public MsProductsServiceStack(
-      final Construct scope, final String id, final StackProps props, Cluster cluster) {
+      final Construct scope,
+      final String id,
+      final StackProps props,
+      Cluster cluster,
+      SnsTopic productEventsTopic) {
     super(scope, id, props);
 
-    ApplicationLoadBalancedFargateService applicationService = createApplicationService(cluster);
-    configureHealthCheck(applicationService);
-    configureScalable(applicationService);
+    ApplicationLoadBalancedFargateService service =
+        createApplicationService(cluster, productEventsTopic);
+    configureHealthCheck(service);
+    configureScalable(service);
+
+    productEventsTopic.getTopic().grantPublish(service.getTaskDefinition().getTaskRole());
   }
 
-  private ApplicationLoadBalancedFargateService createApplicationService(Cluster cluster) {
+  private ApplicationLoadBalancedFargateService createApplicationService(
+      Cluster cluster, SnsTopic productEventsTopic) {
 
     return ApplicationLoadBalancedFargateService.Builder.create(this, SERVICE_ID)
         .cluster(cluster)
@@ -77,7 +88,7 @@ public class MsProductsServiceStack extends Stack {
         .cpu(CPU_NUMBER)
         .memoryLimitMiB(MEMORY_LIMIT)
         .listenerPort(LISTENER_PORT)
-        .taskImageOptions(taskImageOptions())
+        .taskImageOptions(taskImageOptions(productEventsTopic))
         .publicLoadBalancer(true)
         .build();
   }
@@ -93,10 +104,15 @@ public class MsProductsServiceStack extends Stack {
     return AwsLogDriverProps.builder().logGroup(logGroup).streamPrefix(LOG_PREFIX).build();
   }
 
-  private Map<String, String> createEnvironments() {
+  private Map<String, String> createEnvironments(SnsTopic productEventsTopic) {
     Map<String, String> environments = new HashMap<>();
 
-    String databaseUrl = MessageFormat.format(JDBC_URL, Fn.importValue("ms-products-db-url"));
+    String databaseUrl =
+        MessageFormat.format(
+            JDBC_URL,
+            Fn.importValue("ms-products-db-url"),
+            Fn.importValue("ms-products-db-username"));
+
     String databaseUsername = Fn.importValue("ms-products-db-username");
     String databasePassword = Fn.importValue("ms-products-db-password");
 
@@ -104,11 +120,14 @@ public class MsProductsServiceStack extends Stack {
     environments.put("DATASOURCE_USERNAME", databaseUsername);
     environments.put("DATASOURCE_PASSWORD", databasePassword);
     environments.put("ENVIRONMENT_PROFILE", "production");
+    environments.put("AWS_REGION", "us-east-1");
+    environments.put(
+        "AWS_SNS_TOPIC_PRODUCT_EVENTS_NAME", productEventsTopic.getTopic().getTopicArn());
 
     return environments;
   }
 
-  private ApplicationLoadBalancedTaskImageOptions taskImageOptions() {
+  private ApplicationLoadBalancedTaskImageOptions taskImageOptions(SnsTopic productEventsTopic) {
     String image = MessageFormat.format("{0}/{1}:{2}", IMAGE_REPOSITORY, IMAGE_NAME, IMAGE_TAG);
 
     return ApplicationLoadBalancedTaskImageOptions.builder()
@@ -116,7 +135,7 @@ public class MsProductsServiceStack extends Stack {
         .image(ContainerImage.fromRegistry(image))
         .containerPort(CONTAINER_PORT)
         .logDriver(LogDriver.awsLogs(logConfig()))
-        .environment(createEnvironments())
+        .environment(createEnvironments(productEventsTopic))
         .build();
   }
 
@@ -124,7 +143,7 @@ public class MsProductsServiceStack extends Stack {
 
     HealthCheck healthCheck =
         new HealthCheck.Builder()
-            .path(HEALTH_CHECK_PATH)
+            .path(HEALTH_CHECK_PATH.getPath())
             .port(HEALTH_CHECK_PORT)
             .healthyHttpCodes(HEALTH_CHECK_HEALTHY_STATUS_CODE)
             .build();

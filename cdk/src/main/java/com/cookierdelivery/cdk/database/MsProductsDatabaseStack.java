@@ -19,14 +19,19 @@ import software.amazon.awscdk.services.ec2.Vpc;
 import software.amazon.awscdk.services.rds.Credentials;
 import software.amazon.awscdk.services.rds.DatabaseInstance;
 import software.amazon.awscdk.services.rds.DatabaseInstanceEngine;
+import software.amazon.awscdk.services.rds.IInstanceEngine;
 import software.amazon.awscdk.services.rds.PostgresEngineVersion;
 import software.amazon.awscdk.services.rds.PostgresInstanceEngineProps;
 
 public class MsProductsDatabaseStack extends Stack {
 
-  private String databaseUrl;
-  private String databaseUsername;
-  private String databasePassword;
+  private static final InstanceType INSTANCE_TYPE =
+      InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.MICRO);
+
+  private static final int DATABASE_PORT = 5432;
+  private static final IInstanceEngine DATABASE_ENGINE =
+      DatabaseInstanceEngine.postgres(
+          PostgresInstanceEngineProps.builder().version(PostgresEngineVersion.VER_12).build());
 
   public MsProductsDatabaseStack(final Construct scope, final String id, Vpc vpc) {
     this(scope, id, null, vpc);
@@ -51,22 +56,19 @@ public class MsProductsDatabaseStack extends Stack {
     ISecurityGroup securityGroup =
         SecurityGroup.fromSecurityGroupId(this, id, vpc.getVpcDefaultSecurityGroup());
 
-    securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(3306));
+    securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(DATABASE_PORT));
 
     DatabaseInstance database =
         DatabaseInstance.Builder.create(this, "RDS-Products")
             .instanceIdentifier("ms-products-db")
-            .engine(
-                DatabaseInstanceEngine.postgres(
-                    PostgresInstanceEngineProps.builder()
-                        .version(PostgresEngineVersion.VER_12)
-                        .build()))
+            .engine(DATABASE_ENGINE)
+            .databaseName(databaseUsername.getValueAsString())
             .vpc(vpc)
             .credentials(
                 Credentials.fromPassword(
                     databaseUsername.getValueAsString(),
                     SecretValue.plainText(databasePassword.getValueAsString())))
-            .instanceType(InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.MICRO))
+            .instanceType(INSTANCE_TYPE)
             .multiAz(false)
             .allocatedStorage(10)
             .securityGroups(Collections.singletonList(securityGroup))
